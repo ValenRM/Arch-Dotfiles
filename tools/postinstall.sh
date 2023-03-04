@@ -21,14 +21,15 @@ SHOWCURSOR='\e[?25h'
 
 TONULL="> /dev/null 2>&1"
 
+Dotfiles_Dir="$HOME/.config/"
+Git_Dir="$HOME/.repos/dotfiles/"
+
 #Vital Functions
 
 function error_handler() {
     echo -e "\n${RED}${BOLD}Error: ${RESET}Command ${GREEN}'$1'${RESET} ${RED}${BOLD}failed${RESET} with exit status code of ${RED}${BOLD}$2${RESET}"
     return 0
 }
-
-trap 'error_handler "$BASH_COMMAND" "$?"' ERR
 
 function cleanup() {
   echo -e "${SHOWCURSOR}"
@@ -39,39 +40,65 @@ trap cleanup EXIT
 trap 'error_handler "$BASH_COMMAND" "$?"' ERR
 
 function show_prompt() {
-    echo -e "${CYAN}============ Arch Linux Post Install ============${RESET}\n\n"
+    echo -e "${HIDECURSOR}${CYAN}============ Arch Linux Post Install ============${RESET}\n\n"
 }
 
 function sudo_request() {
+    trap 'error_handler "$BASH_COMMAND" "$?"' ERR
     sudo -v
 }
 
 function install_dependencies() {
+    trap 'error_handler "$BASH_COMMAND" "$?"' ERR
     echo -e "${YELLOW}${BOLD}[*] ${RESET}Installing Dependencies..."
     sudo pacman -Syu --noconfirm > /dev/null 2>&1
-    sudo pacman -Sq --noconfirm xorg-server xorg-xinit xf86-video-qxl python openssh bspwm sxhkd rofi nitrogen picom kitty chromium arandr ttf-hack-nerd zsh git bat lsd neovim ranger > /dev/null 2>&1
+    sudo pacman -Sq --noconfirm xorg-server xorg-xsetroot xorg-xrandr xorg-xinit xf86-video-qxl python openssh bspwm sxhkd rofi nitrogen picom kitty chromium ttf-hack-nerd firefox zsh git bat lsd neovim ranger > /dev/null 2>&1
     sleep 1
-    mkdir ~/.repos
-    mkdir ~/.repos/yay
+    mkdir $HOME/.repos
+    mkdir $HOME/.repos/yay
     git clone -q https://aur.archlinux.org/yay-git.git ~/.repos/yay > /dev/null 2>&1
-    cd ~/.repos/yay
+    cd $HOME/.repos/yay
     makepkg --noconfirm -si > /dev/null 2>&1
+    cd
     git clone -q --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/themes/powerlevel10 > /dev/null 2>&1
     echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> ~/.zshrc #will be removed later on
-    sudo chsh -s $(which zsh) $(whoami)
+    tput cuu1
+    tput ed
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Dependencies"
 }
 
-function make_configs() {
-    mkdir ~/.config/bspwm
-    mkdir ~/.config/sxhkd
-    mkdir ~/.config/polybar
-    mkdir ~/.config/kitty
-    mkdir ~/.config/picom
+function clone_configs() {
+    trap 'error_handler "$BASH_COMMAND" "$?"' ERR
+    echo -e "${YELLOW}${BOLD}[*] ${RESET}Cloning Dotfiles..."
+    mkdir $HOME/.repos/dotfiles
+    git clone https://github.com/ValenRM/tempfiles $HOME/.repos/dotfiles > /dev/null 2>&1
+    sleep 1
+    for folder in "$Git_Dir"*/; do
+        folder=${folder%*/}
+        cp -r "$folder" "$Dotfiles_Dir"
+    done
+    mkdir $HOME/.config/bspwm
+    mv $HOME/.config/bspwmrc $HOME/.config/bspwm
+    cp $HOME/.repos/dotfiles/xinitrc $HOME/.xinitrc
+    mkdir $HOME/Documents
+    mkdir $HOME/Documents/Wallpapers
+    mkdir $HOME/Downloads
+    tput cuu1
+    tput ed
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles"
 }
 
 sudo_request
 clear
 show_prompt
 install_dependencies
-make_configs
+clone_configs
+cleanup
+echo "finished"
 read
+
+# TODO: Set display resolution automatically
+# TODO: Set background automatically
+# TODO: Install Polybar
+# TODO: Fix Stuck Cursor
+# TODO: Bind Cat to Bat & Ls to Lsd

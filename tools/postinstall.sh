@@ -78,8 +78,6 @@ function clone_configs() {
         folder=${folder%*/}
         cp -r "$folder" "$Dotfiles_Dir"
     done
-    mkdir $HOME/.config/bspwm
-    mv $HOME/.config/bspwmrc $HOME/.config/bspwm
     cp $HOME/.repos/dotfiles/dotfiles/xinitrc $HOME/.xinitrc
     mkdir $HOME/Documents
     cp -r $HOME/.repos/dotfiles/Wallpapers $HOME/Documents
@@ -89,11 +87,32 @@ function clone_configs() {
     chmod +x $HOME/.config/polybar/launch.sh
     chmod +x $HOME/.config/polybar/scripts/network.sh
     chmod +x $HOME/.config/polybar/scripts/performance_counters.sh
+    sed -i 's|# setwp|nitrogen --set-zoom-fill --save $HOME/Documents/Wallpapers/lake.jpg|g' $HOME/.xinitrc
     tput cuu1
     tput ed
     echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles"
-    #monitor=$(xrandr | grep " connected" | cut -f1 -d " ")
-    #sed -i "s/# xrandr/xrandr --output ${monitor} --mode 1920x1080/g" $HOME/.xinitrc
+}
+
+function setup_aliases() {
+    trap 'error_handler "$BASH_COMMAND" "$?"' ERR   
+    echo -e "${YELLOW}${BOLD}[*] ${RESET}Configuring Aliases..."
+    local cat_alias='alias cat="bat"'
+    local ls_alias='alias ls="lsd -la"'
+    echo "$cat_alias" >> $HOME/.bashrc
+    echo "$ls_alias" >> $HOME/.bashrc
+    echo "$cat_alias" >> $HOME/.zshrc
+    echo "$ls_alias" >> $HOME/.zshrc
+    alias cat='bat'
+    alias ls='lsd -la'
+    tput cuu1
+    tput ed
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Aliases"
+}
+
+function set_res() {
+    monitor=$(xrandr | grep " connected" | cut -f1 -d " ")
+    sed -i "s/# xrandr/xrandr --output ${monitor} --mode 1920x1080/g" $HOME/.xinitrc
+    xrandr --output $monitor --mode 1920x1080
 }
 
 sudo_request
@@ -101,10 +120,7 @@ clear
 show_prompt
 install_dependencies
 clone_configs
+setup_aliases
 cleanup
 echo "finished"
 read
-
-# TODO: Set display resolution automatically - done
-# TODO: Set background automatically
-# TODO: Bind Cat to Bat & Ls to Lsd

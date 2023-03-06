@@ -22,7 +22,7 @@ SHOWCURSOR='\e[?25h'
 TONULL="> /dev/null 2>&1"
 
 Dotfiles_Dir="$HOME/.config/"
-Git_Dir="$HOME/.repos/dotfiles/"
+Git_Dir="$HOME/.repos/dotfiles/dotfiles"
 
 #Vital Functions
 
@@ -62,6 +62,7 @@ function install_dependencies() {
     cd
     git clone -q --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/themes/powerlevel10 > /dev/null 2>&1
     echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> ~/.zshrc #will be removed later on
+    yay --noconfirm -S polybar > /dev/null 2>&1
     tput cuu1
     tput ed
     echo -e "${GREEN}${BOLD}[*] ${RESET}Dependencies"
@@ -72,20 +73,27 @@ function clone_configs() {
     echo -e "${YELLOW}${BOLD}[*] ${RESET}Cloning Dotfiles..."
     mkdir $HOME/.repos/dotfiles
     git clone https://github.com/ValenRM/tempfiles $HOME/.repos/dotfiles > /dev/null 2>&1
-    sleep 1
-    for folder in "$Git_Dir"*/; do
+    sleep 2
+    for folder in "$Git_Dir"/*/; do
         folder=${folder%*/}
         cp -r "$folder" "$Dotfiles_Dir"
     done
     mkdir $HOME/.config/bspwm
     mv $HOME/.config/bspwmrc $HOME/.config/bspwm
-    cp $HOME/.repos/dotfiles/xinitrc $HOME/.xinitrc
+    cp $HOME/.repos/dotfiles/dotfiles/xinitrc $HOME/.xinitrc
     mkdir $HOME/Documents
-    mkdir $HOME/Documents/Wallpapers
+    cp -r $HOME/.repos/dotfiles/Wallpapers $HOME/Documents
     mkdir $HOME/Downloads
+    chmod +x $HOME/.config/bspwm/bspwmrc
+    chmod +x $HOME/.config/sxhkd/sxhkdrc
+    chmod +x $HOME/.config/polybar/launch.sh
+    chmod +x $HOME/.config/polybar/scripts/network.sh
+    chmod +x $HOME/.config/polybar/scripts/performance_counters.sh
     tput cuu1
     tput ed
     echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles"
+    #monitor=$(xrandr | grep " connected" | cut -f1 -d " ")
+    #sed -i "s/# xrandr/xrandr --output ${monitor} --mode 1920x1080/g" $HOME/.xinitrc
 }
 
 sudo_request
@@ -97,8 +105,6 @@ cleanup
 echo "finished"
 read
 
-# TODO: Set display resolution automatically
+# TODO: Set display resolution automatically - done
 # TODO: Set background automatically
-# TODO: Install Polybar
-# TODO: Fix Stuck Cursor
 # TODO: Bind Cat to Bat & Ls to Lsd

@@ -63,17 +63,29 @@ function install_dependencies() {
     yay --noconfirm -S polybar > /dev/null 2>&1
     tput cuu1
     tput ed
-    echo -e "${GREEN}${BOLD}[*] ${RESET}Dependencies"
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Dependencies Installed."
 }
 
 function clone_configs() {
     trap 'error_handler "$BASH_COMMAND" "$?"' ERR
+    sudo usermod -aG power,video $(whoami)
+    echo "if ! pgrep -x Xorg > /dev/null; then
+    startx
+    exit
+    fi" >> ~/.bashrc
     echo -e "${YELLOW}${BOLD}[*] ${RESET}Cloning Dotfiles..."
     mkdir $HOME/.repos/dotfiles
     git clone https://github.com/ValenRM/tempfiles $HOME/.repos/dotfiles > /dev/null 2>&1
-    sleep 2
+    tput cuu1
+    tput ed
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles Cloned."
+    echo -e "${YELLOW}${BOLD}[*] ${RESET}Copying Dotfiles..."
+    echo -e "${BLUE}${BOLD}    =>${RESET}"
+    sleep 1
     for folder in "$Git_Dir"/*/; do
         folder=${folder%*/}
+        folder_name=$(basename "$folder")
+        echo -e "${GREEN}${BOLD}        [*] ${RESET}$folder_name Copied."
         cp -r "$folder" "$Dotfiles_Dir"
     done
     cp $HOME/.repos/dotfiles/dotfiles/xinitrc $HOME/.xinitrc
@@ -83,12 +95,25 @@ function clone_configs() {
     mkdir $HOME/Documents
     cp -r $HOME/.repos/dotfiles/Wallpapers $HOME/Documents
     mkdir $HOME/Downloads
+    cd
+    sed -i 's|# setwp|nitrogen --set-zoom-fill --save $HOME/Documents/Wallpapers/lake.jpg|g' $HOME/.xinitrc
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles Copied."
+}
+
+function set_permissions() {
+    echo -e "${YELLOW}${BOLD}[*] ${RESET}Setting up Executable Permissions..."
     chmod +x $HOME/.config/bspwm/bspwmrc
     chmod +x $HOME/.config/sxhkd/sxhkdrc
     chmod +x $HOME/.config/polybar/launch.sh
     chmod +x $HOME/.config/polybar/scripts/network.sh
     chmod +x $HOME/.config/polybar/scripts/performance_counters.sh
-    sed -i 's|# setwp|nitrogen --set-zoom-fill --save $HOME/Documents/Wallpapers/lake.jpg|g' $HOME/.xinitrc
+    tput cuu1
+    tput ed
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Executable Permissions Configured."
+}
+
+function configure_p10k() {
+    echo -e "${YELLOW}${BOLD}[*] ${RESET}Configuring p10k..."
     git clone -q --depth=1 https://github.com/powerline/fonts.git $HOME/.repos/f > /dev/null 2>&1
     git clone -q --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/themes/powerlevel10k > /dev/null 2>&1
     sudo mkdir /usr/share/zsh/plugins
@@ -99,7 +124,7 @@ function clone_configs() {
     sudo cp $HOME/.repos/ohmyzsh/plugins/sudo/sudo.plugin.zsh /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
     tput cuu1
     tput ed
-    echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles"
+    echo -e "${GREEN}${BOLD}[*] ${RESET}p10k Configured."
 }
 
 function setup_aliases() {
@@ -113,7 +138,7 @@ function setup_aliases() {
     alias ls='lsd -la'
     tput cuu1
     tput ed
-    echo -e "${GREEN}${BOLD}[*] ${RESET}Aliases"
+    echo -e "${GREEN}${BOLD}[*] ${RESET}Aliases Set."
 }
 
 function set_res() {
@@ -127,6 +152,8 @@ clear
 show_prompt
 #install_dependencies
 clone_configs
+set_permissions
+configure_p10k
 setup_aliases
 cleanup
 echo "finished"

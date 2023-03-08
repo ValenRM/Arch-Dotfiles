@@ -150,7 +150,7 @@ function set_res() {
 sudo_request
 clear
 show_prompt
-#install_dependencies
+install_dependencies
 clone_configs
 set_permissions
 configure_p10k

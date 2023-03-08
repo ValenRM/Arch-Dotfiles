@@ -156,5 +156,6 @@ set_permissions
 configure_p10k
 setup_aliases
 cleanup
-echo "finished"
+echo -e "\n${GREEN}${BOLD}[*] ${RESET}Installation Finished.\n\n"
+echo "Press any key to return"
 read

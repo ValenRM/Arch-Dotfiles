@@ -75,7 +75,7 @@ function clone_configs() {
     fi" >> ~/.bashrc
     echo -e "${YELLOW}${BOLD}[*] ${RESET}Cloning Dotfiles..."
     mkdir $HOME/.repos/dotfiles
-    git clone https://github.com/ValenRM/tempfiles $HOME/.repos/dotfiles > /dev/null 2>&1
+    git clone https://github.com/ValenRM/Dotfiles $HOME/.repos/dotfiles > /dev/null 2>&1
     tput cuu1
     tput ed
     echo -e "${GREEN}${BOLD}[*] ${RESET}Dotfiles Cloned."

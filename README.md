@@ -12,6 +12,18 @@ Bash tools for arch linux
   * **Terminal Emulator:** Kitty
   * **Text Editor:** Neovim
 
-  
+  ## 
+  * **Note:** The dotfiles for this enviroment are copied from my [Dotifles](https://github.com/ValenRM/Dotfiles) repository.
+
+  ## Download the Scirpt & Give Execution Permitions
+  ```
+  curl -LJO https://raw.githubusercontent.com/ValenRM/Arch-Tools/main/tools/arch-postinstall/postinstall.sh && chmod +x postinstall.sh
+  ```
+
+
+  ## Run the Script
+  ```
+  ./postinstall.sh
+  ```
 </details>
 

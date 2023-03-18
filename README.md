@@ -15,7 +15,7 @@ Bash tools for arch linux
   ## 
   * **Note:** The dotfiles for this enviroment are copied from my [Dotifles](https://github.com/ValenRM/Dotfiles) repository.
 
-  ## Download the Scirpt & Give Execution Permitions
+  ## Download the Scirpt & Give Execution Permission
   ```
   curl -LJO https://raw.githubusercontent.com/ValenRM/Arch-Tools/main/tools/arch-postinstall/postinstall.sh && chmod +x postinstall.sh
   ```

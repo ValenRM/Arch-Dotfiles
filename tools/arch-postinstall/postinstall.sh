@@ -52,7 +52,7 @@ function install_dependencies() {
     trap 'error_handler "$BASH_COMMAND" "$?"' ERR
     echo -e "${YELLOW}${BOLD}[*] ${RESET}Installing Dependencies..."
     sudo pacman -Syu --noconfirm > /dev/null 2>&1
-    sudo pacman -Sq --noconfirm xorg-server xorg-xsetroot xorg-xrandr xorg-xinit flameshot pavucontrol pulseaudio htop nautilus discord obs-studio libreoffice p7zip zip unzip pacman-contrib neofetch xf86-video-qxl python openssh bspwm sxhkd rofi nitrogen picom kitty chromium ttf-hack-nerd firefox zsh git bat lsd neovim ranger npm > /dev/null 2>&1
+    sudo pacman -Sq --noconfirm xorg-server xorg-xsetroot xorg-xrandr xorg-xinit flameshot pavucontrol pulseaudio pulseaudio-alsa alsa-utils pulseaudio-equalizer htop nautilus discord obs-studio libreoffice p7zip zip unzip pacman-contrib neofetch xf86-video-qxl python openssh bspwm sxhkd rofi nitrogen picom kitty chromium ttf-hack-nerd firefox zsh git bat lsd neovim ranger npm > /dev/null 2>&1
     sleep 1
     mkdir $HOME/.repos
     mkdir $HOME/.repos/yay
